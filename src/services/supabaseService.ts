@@ -136,7 +136,7 @@ export const fetchPodData = async (podId: string, currentUserId: string): Promis
 
   return {
     id: podData.id,
-    name: podData.name,
+    name: podData.title, // Changed from podData.name to podData.title
     members,
     checkIns,
     notifications,
@@ -192,7 +192,7 @@ export const ensureUserProfile = async (supabaseUser: any): Promise<User> => {
 export const createNewPod = async (podName: string, userId: string): Promise<Pod | null> => {
   const { data: newPod, error: podError } = await supabase
     .from('pods')
-    .insert({ name: podName, owner_id: userId })
+    .insert({ title: podName, owner_id: userId }) // Changed from name to title
     .select('*')
     .single();
 
@@ -214,7 +214,7 @@ export const createNewPod = async (podName: string, userId: string): Promise<Pod
 
   return {
     id: newPod.id,
-    name: newPod.name,
+    name: newPod.title, // Changed from newPod.name to newPod.title
     members: [], // Will be populated on next fetch
     checkIns: [],
     notifications: [],
@@ -499,7 +499,7 @@ export const inviteMemberToPod = async (podId: string, inviteeEmail: string): Pr
 export const fetchUserPods = async (userId: string): Promise<Pod[]> => {
   const { data, error } = await supabase
     .from('pod_members')
-    .select('pod_id, pods(id, name, owner_id)')
+    .select('pod_id, pods(id, title, owner_id)') // Changed from name to title
     .eq('user_id', userId);
 
   if (error) {
@@ -509,7 +509,7 @@ export const fetchUserPods = async (userId: string): Promise<Pod[]> => {
 
   return data?.map((pm: any) => ({
     id: pm.pods.id,
-    name: pm.pods.name,
+    name: pm.pods.title, // Changed from pm.pods.name to pm.pods.title
     members: [], // Will be populated by fetchPodData
     checkIns: [], // Will be populated by fetchPodData
     notifications: [], // Will be populated by fetchPodData
