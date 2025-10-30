@@ -1,6 +1,5 @@
+@import '@supabase/auth-ui-react/dist/assets/index.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import Supabase Auth UI CSS */
-@import '@supabase/auth-ui-react/dist/assets/index.css';
