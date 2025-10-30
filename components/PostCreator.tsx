@@ -24,7 +24,8 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<{ title: string; description: string; suggestions: string[]; onSelect: (s: string) => void }>({ title: '', description: '', suggestions: [], onSelect: (s: string) => {} });
+  // Fix 1: Rename 's' to '_s' in the initial empty function to satisfy TS6133
+  const [modalContent, setModalContent] = useState<{ title: string; description: string; suggestions: string[]; onSelect: (s: string) => void }>({ title: '', description: '', suggestions: [], onSelect: (_s: string) => {} });
 
   // Initialize or reset goals
   const initializeGoals = (initialGoals: string[] = []) => {
@@ -85,7 +86,8 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
       
       let title = '', description = '';
       let suggestions: string[] = [];
-      let onSelect: (s: string) => void = (s: string) => {};
+      // Fix 2: Rename 's' to '_s' in the initial empty function to satisfy TS6133
+      let onSelect: (s: string) => void = (_s: string) => {};
       
       try {
         if (type === 'focus') {
