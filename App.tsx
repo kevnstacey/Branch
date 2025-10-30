@@ -7,13 +7,12 @@ import PodMembers from './components/PodMembers';
 import EveningCheckInModal from './components/EveningCheckInModal';
 import InviteModal from './components/InviteModal';
 import AccountabilityCalendar from './components/AccountabilityCalendar';
-import { Pod, User, CheckIn, GoalStatus, Notification, Reaction, Comment, FeedGoal } from './types';
+import { Pod, User, CheckIn, Notification } from './types';
 import { generateEncouragement } from './services/geminiService';
 import { SessionContextProvider, useSession } from './src/components/SessionContextProvider';
 import Login from './src/pages/Login';
 import { supabase } from './src/integrations/supabase/client';
 import {
-  fetchCurrentUserProfile,
   fetchPodData,
   ensureUserProfile,
   createNewPod,
@@ -22,7 +21,7 @@ import {
   addComment,
   addReaction,
   markAllNotificationsAsRead,
-  inviteMemberToPod,
+  // Removed inviteMemberToPod as it was unused in App.tsx
   fetchUserPods,
 } from './src/services/supabaseService';
 
@@ -31,7 +30,6 @@ const AuthenticatedAppContent: React.FC = () => {
   const { session } = useSession();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activePod, setActivePod] = useState<Pod | null>(null);
-  const [userPods, setUserPods] = useState<Pod[]>([]); // List of pods the user belongs to
   const [currentView, setCurrentView] = useState<'my-dashboard' | string>('my-dashboard');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [highlightedCheckInId, setHighlightedCheckInId] = useState<string | null>(null);
@@ -64,7 +62,6 @@ const AuthenticatedAppContent: React.FC = () => {
         setCurrentUser(appUser);
 
         const pods = await fetchUserPods(appUser.id);
-        setUserPods(pods);
 
         if (pods.length > 0) {
           // For now, just pick the first pod. In a real app, user would select.
@@ -76,7 +73,6 @@ const AuthenticatedAppContent: React.FC = () => {
           if (newPod) {
             const fullPodData = await fetchPodData(newPod.id, appUser.id);
             setActivePod(fullPodData);
-            setUserPods([newPod]);
           }
         }
       }
@@ -216,16 +212,6 @@ const AuthenticatedAppContent: React.FC = () => {
       await addReaction(checkInId, currentUser.id, emoji, targetCheckIn.userId);
     }
   }, [limitReached, currentUser, activePod, incrementUsage]);
-
-  const handleInvite = useCallback(async (inviteeEmail: string) => {
-    if (!activePod) return;
-    const success = await inviteMemberToPod(activePod.id, inviteeEmail);
-    if (success) {
-      // In a real app, this would trigger a notification/approval flow.
-      // For now, we'll just close the modal.
-      setInviteModalOpen(false);
-    }
-  }, [activePod]);
 
   const feedKey = `${currentView}-${selectedDate?.getTime()}-${activePod?.id}`;
 

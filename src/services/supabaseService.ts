@@ -1,13 +1,7 @@
 import { supabase } from '../integrations/supabase/client';
 import { Pod, User, CheckIn, GoalStatus, Comment, Reaction, Notification, FeedGoal, Attachment } from '../../types';
 
-// Helper to convert Supabase user metadata to our User type
-const mapSupabaseUserToAppUser = (supabaseUser: any): User => ({
-  id: supabaseUser.id,
-  name: supabaseUser.user_metadata.name || supabaseUser.email?.split('@')[0] || 'User',
-  email: supabaseUser.email || '',
-  avatar: supabaseUser.user_metadata.photo_url || supabaseUser.user_metadata.avatar_url || '👤',
-});
+// Removed mapSupabaseUserToAppUser as it was unused.
 
 // Fetches the current user's profile from the 'users' table
 export const fetchCurrentUserProfile = async (userId: string): Promise<User | null> => {

@@ -24,7 +24,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: '', description: '', suggestions: [] as string[], onSelect: (s: string) => {} });
+  const [modalContent, setModalContent] = useState<{ title: string; description: string; suggestions: string[]; onSelect: (s: string) => void }>({ title: '', description: '', suggestions: [], onSelect: (s: string) => {} });
 
   // Initialize or reset goals
   const initializeGoals = (initialGoals: string[] = []) => {
@@ -83,15 +83,16 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
       setIsGenerating(true);
       setModalOpen(true);
       
-      let title = '', description = '', suggestions: string[] = [];
-      let onSelect = (s: string) => {};
+      let title = '', description = '';
+      let suggestions: string[] = [];
+      let onSelect: (s: string) => void = (s: string) => {};
       
       try {
         if (type === 'focus') {
             title = 'AI Focus Suggestions';
             description = 'Based on your recent activity.';
             onSelect = (s) => setFocus(s);
-            setModalContent({ title, description, suggestions, onSelect }); // Show loading state
+            setModalContent({ title, description, suggestions: [], onSelect }); // Show loading state
             suggestions = await generateFocusSuggestions(checkInHistory);
         } else {
             if (!focus) {
@@ -107,7 +108,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
                 handleUpdateGoal(goalIdToUpdate, s);
               }
             };
-            setModalContent({ title, description, suggestions, onSelect }); // Show loading state
+            setModalContent({ title, description, suggestions: [], onSelect }); // Show loading state
             suggestions = await generateGoalSuggestions(focus);
         }
         
