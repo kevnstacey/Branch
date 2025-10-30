@@ -18,16 +18,6 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      },
-      // Prevent Vite from bundling React and ReactDOM,
-      // relying on the importmap in index.html instead.
-      optimizeDeps: {
-        exclude: ['react', 'react-dom'],
-      },
-      build: {
-        rollupOptions: {
-          external: ['react', 'react-dom'],
-        },
-      },
+      }
     };
 });
