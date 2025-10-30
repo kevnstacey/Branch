@@ -15,7 +15,7 @@ import {
   markAllNotificationsAsRead,
   fetchUserPods,
 } from '../services/supabaseService';
-import { generateEncouragement } from '@/services/geminiService'; // Fix 7: Use alias for import
+import { generateEncouragement } from '@/services/geminiService';
 
 interface UsePodDataProps {
   session: Session | null;
@@ -43,7 +43,8 @@ interface UsePodDataReturn {
   handleAddReaction: (checkInId: string, emoji: string) => Promise<void>;
   setInviteModalOpen: (isOpen: boolean) => void;
   setEveningModalOpen: (isOpen: boolean) => void;
-  setCheckInToUpdate: (checkIn: CheckIn | null) => void; // Fix 8: Add to return interface
+  setCheckInToUpdate: (checkIn: CheckIn | null) => void;
+  incrementUsage: () => void; // Added incrementUsage to the return interface
 }
 
 export const usePodData = ({ session }: UsePodDataProps): UsePodDataReturn => {
@@ -131,7 +132,7 @@ export const usePodData = ({ session }: UsePodDataProps): UsePodDataReturn => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activePod?.id, currentUser?.id, activePod?.checkIns]); // Added activePod.checkIns to dependency array
+  }, [activePod?.id, currentUser?.id, activePod?.checkIns]);
 
   const handleViewChange = useCallback((view: 'my-dashboard' | string) => {
     setCurrentView(view);
@@ -253,6 +254,7 @@ export const usePodData = ({ session }: UsePodDataProps): UsePodDataReturn => {
     handleAddReaction,
     setInviteModalOpen,
     setEveningModalOpen,
-    setCheckInToUpdate, // Fix 8: Return setCheckInToUpdate from the hook
+    setCheckInToUpdate,
+    incrementUsage, // Return incrementUsage from the hook
   };
 };

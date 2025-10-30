@@ -9,8 +9,8 @@ import InviteModal from './components/InviteModal';
 import AccountabilityCalendar from './components/AccountabilityCalendar';
 import { SessionContextProvider, useSession } from './src/components/SessionContextProvider';
 import Login from './src/pages/Login';
-import { usePodData } from './src/hooks/usePodData'; // Fix 3: Changed to relative import path
-import { Notification, User, CheckIn } from './types'; // Import types for explicit typing
+import { usePodData } from './src/hooks/usePodData';
+import { Notification, User, CheckIn } from './types';
 
 // Main application content component
 const AuthenticatedAppContent: React.FC = () => {
@@ -25,7 +25,6 @@ const AuthenticatedAppContent: React.FC = () => {
     checkInToUpdate,
     inviteModalOpen,
     pushedGoals,
-    // _usageCount, // Fix 4: Removed _usageCount from destructuring as it's not directly used here
     limitReached,
     handleViewChange,
     handleDateSelect,
@@ -38,7 +37,8 @@ const AuthenticatedAppContent: React.FC = () => {
     setInviteModalOpen,
     setEveningModalOpen,
     setCheckInToUpdate,
-  } = usePodData({ session }); // Use the custom hook
+    incrementUsage, // Destructure incrementUsage from the hook
+  } = usePodData({ session });
 
   const feedKey = `${currentView}-${selectedDate?.getTime()}-${activePod?.id}`;
 
@@ -58,7 +58,7 @@ const AuthenticatedAppContent: React.FC = () => {
         onViewChange={handleViewChange}
         currentView={currentView}
         onNotificationClick={handleNotificationClick}
-        notifications={activePod.notifications.filter((n: Notification) => activePod.members.some((m: User) => m.id === n.fromUserId))} {/* Removed inline comment */}
+        notifications={activePod.notifications.filter((n: Notification) => activePod.members.some((m: User) => m.id === n.fromUserId))}
         onMarkAllAsRead={handleMarkAllAsRead}
         onInvite={() => setInviteModalOpen(true)}
       />
@@ -73,8 +73,8 @@ const AuthenticatedAppContent: React.FC = () => {
                   onAddCheckIn={handleAddCheckIn}
                   pushedGoals={pushedGoals}
                   disabled={limitReached}
-                  checkInHistory={activePod.checkIns.filter((c: CheckIn) => c.userId === currentUser.id)} {/* Removed inline comment */}
-                  onAiAction={usePodData({ session }).incrementUsage} // Directly call incrementUsage from the hook
+                  checkInHistory={activePod.checkIns.filter((c: CheckIn) => c.userId === currentUser.id)}
+                  onAiAction={incrementUsage} // Pass incrementUsage directly
                 />
                 {limitReached && (
                   <div className="bg-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md" role="alert">
