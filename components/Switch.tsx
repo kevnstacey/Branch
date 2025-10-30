@@ -13,51 +13,20 @@ const Switch: React.FC<SwitchProps> = ({ isOn, handleToggle, id }) => {
       <input
         checked={isOn}
         onChange={handleToggle}
-        className="react-switch-checkbox"
+        className="sr-only peer" // Visually hide the checkbox but keep it accessible, use 'peer' for sibling styling
         id={id}
         type="checkbox"
       />
       <label
-        style={{ background: isOn ? '#10B981' : '#E5E7EB' }}
-        className="react-switch-label"
         htmlFor={id}
+        className={`relative inline-flex items-center cursor-pointer w-10 h-5 rounded-full transition-colors duration-200 ease-in-out 
+          ${isOn ? 'bg-emerald-500' : 'bg-stone-200'}`}
       >
-        <span className={`react-switch-button`} />
+        <span
+          className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out
+            ${isOn ? 'translate-x-5' : 'translate-x-0'}`}
+        />
       </label>
-      <style>{`
-        .react-switch-checkbox {
-          height: 0;
-          width: 0;
-          visibility: hidden;
-        }
-        .react-switch-label {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          cursor: pointer;
-          width: 40px;
-          height: 20px;
-          border-radius: 100px;
-          position: relative;
-          transition: background-color .2s;
-        }
-        .react-switch-label .react-switch-button {
-          content: '';
-          position: absolute;
-          top: 2px;
-          left: 2px;
-          width: 16px;
-          height: 16px;
-          border-radius: 45px;
-          transition: 0.2s;
-          background: #fff;
-          box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
-        }
-        .react-switch-checkbox:checked + .react-switch-label .react-switch-button {
-          left: calc(100% - 2px);
-          transform: translateX(-100%);
-        }
-      `}</style>
     </>
   );
 };
