@@ -275,7 +275,7 @@ const AuthenticatedAppContent: React.FC = () => {
               highlightedCheckInId={highlightedCheckInId}
               onOpenEveningModal={(checkIn) => { setCheckInToUpdate(checkIn); setEveningModalOpen(true); }}
               onAddComment={handleAddComment}
-              onAddReaction={onAddReaction}
+              onAddReaction={handleAddReaction}
               disabled={limitReached}
             />
           </div>
