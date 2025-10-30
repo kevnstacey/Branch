@@ -1,9 +1,17 @@
+"use client";
 // services/geminiService.ts
 import { GoogleGenAI, Type } from "@google/genai";
 import { CheckIn, User, FeedGoal } from '../types';
 
 // Access the API key using import.meta.env for Vite
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+if (!apiKey) {
+  console.error("VITE_GEMINI_API_KEY is not set. Please ensure it's in your .env.local file and the app is rebuilt.");
+} else {
+  console.log("Gemini API Key loaded (first 5 chars):", apiKey.substring(0, 5) + "...");
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey! });
 const model = 'gemini-2.5-flash';
 
 const safeJsonParse = (jsonString: string) => {
