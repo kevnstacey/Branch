@@ -19,8 +19,9 @@ export interface FeedGoal {
 
 export interface User {
   id: string;
-  name: string;
-  avatar: string; // Emoji or Initials
+  name: string; // Corresponds to 'name' in public.users
+  email: string; // Corresponds to 'email' in public.users
+  avatar: string; // Corresponds to 'photo_url' in public.users, or a generated emoji/initials
 }
 
 export interface Reaction {

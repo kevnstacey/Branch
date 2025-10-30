@@ -12,9 +12,9 @@ export const demoPods: { [key: string]: Pod } = {
     id: 'p1',
     name: 'Okanagan Founders',
     members: [
-      { id: 'u1', name: 'Kevin', avatar: '👨‍💻' },
-      { id: 'u2', name: 'Aria', avatar: '🎨' },
-      { id: 'u3', name: 'Marc', avatar: '📈' },
+      { id: 'u1', name: 'Kevin', email: 'kevin@example.com', avatar: '👨‍💻' },
+      { id: 'u2', name: 'Aria', email: 'aria@example.com', avatar: '🎨' },
+      { id: 'u3', name: 'Marc', email: 'marc@example.com', avatar: '📈' },
     ],
     checkIns: [
        {
@@ -86,10 +86,10 @@ export const demoPods: { [key: string]: Pod } = {
     id: 'p2',
     name: 'Cross-Country Crew',
     members: [
-      { id: 'u4', name: 'Elena', avatar: '🔬' },
-      { id: 'u5', name: 'Sam', avatar: '🛠️' },
-      { id: 'u6', name: 'Priya', avatar: '⚖️' },
-      { id: 'u7', name: 'Tom', avatar: '🌱' },
+      { id: 'u4', name: 'Elena', email: 'elena@example.com', avatar: '🔬' },
+      { id: 'u5', name: 'Sam', email: 'sam@example.com', avatar: '🛠️' },
+      { id: 'u6', name: 'Priya', email: 'priya@example.com', avatar: '⚖️' },
+      { id: 'u7', name: 'Tom', email: 'tom@example.com', avatar: '🌱' },
     ],
     checkIns: [
       {
