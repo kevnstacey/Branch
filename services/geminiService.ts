@@ -2,7 +2,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CheckIn, User, FeedGoal } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+// Access the API key using import.meta.env for Vite
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
 const model = 'gemini-2.5-flash';
 
 const safeJsonParse = (jsonString: string) => {
