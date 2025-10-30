@@ -7,8 +7,6 @@ import { CheckIn, User, FeedGoal } from '../types';
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 if (!apiKey) {
   console.error("VITE_GEMINI_API_KEY is not set. Please ensure it's in your .env.local file and the app is rebuilt.");
-} else {
-  console.log("Gemini API Key loaded (first 5 chars):", apiKey.substring(0, 5) + "...");
 }
 
 const ai = new GoogleGenAI({ apiKey: apiKey! });
