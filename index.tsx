@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './src/index.css'; // Import the new Tailwind CSS file
+import { SessionContextProvider } from './src/components/SessionContextProvider'; // Import SessionContextProvider
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -11,6 +12,8 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <SessionContextProvider> {/* Wrap App with SessionContextProvider */}
+      <App />
+    </SessionContextProvider>
   </React.StrictMode>
 );

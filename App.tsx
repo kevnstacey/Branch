@@ -7,7 +7,7 @@ import PodMembers from './components/PodMembers';
 import EveningCheckInModal from './components/EveningCheckInModal';
 import InviteModal from './components/InviteModal';
 import AccountabilityCalendar from './components/AccountabilityCalendar';
-import { SessionContextProvider, useSession } from './src/components/SessionContextProvider';
+import { useSession } from './src/components/SessionContextProvider'; // Removed SessionContextProvider import
 import Login from './src/pages/Login';
 import { usePodData } from './src/hooks/usePodData';
 import { Notification, User, CheckIn } from './types';
@@ -139,14 +139,6 @@ const AuthenticatedAppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  return (
-    <SessionContextProvider>
-      <AuthWrapper />
-    </SessionContextProvider>
-  );
-};
-
-const AuthWrapper: React.FC = () => {
   const { session, isLoading } = useSession();
 
   if (isLoading) {
