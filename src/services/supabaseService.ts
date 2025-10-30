@@ -1,8 +1,6 @@
 import { supabase } from '../integrations/supabase/client';
 import { Pod, User, CheckIn, GoalStatus, Comment, Reaction, Notification, FeedGoal, Attachment } from '../../types';
 
-// Removed mapSupabaseUserToAppUser as it was unused.
-
 // Fetches the current user's profile from the 'users' table
 export const fetchCurrentUserProfile = async (userId: string): Promise<User | null> => {
   const { data, error } = await supabase
@@ -97,6 +95,7 @@ export const fetchPodData = async (podId: string, currentUserId: string): Promis
     focus: ci.focus,
     eveningRecap: ci.evening_recap,
     goals: ci.goals.map((g: any) => ({
+      id: g.id, // Include goal ID
       text: g.text,
       status: g.status as GoalStatus,
       attachment: g.attachment_name ? { name: g.attachment_name, type: g.attachment_type, url: g.attachment_url } : undefined,
@@ -278,6 +277,7 @@ export const addCheckIn = async (
       continue;
     }
     newGoals.push({
+      id: newGoal.id, // Include goal ID
       text: newGoal.text,
       status: newGoal.status as GoalStatus,
       attachment: attachmentData,
@@ -318,11 +318,15 @@ export const updateCheckIn = async (
 
   // Update goals
   for (const goal of goals) {
+    // Assuming goal.id exists for existing goals
+    if (!goal.id) {
+      console.warn('Attempted to update a goal without an ID. Skipping:', goal);
+      continue;
+    }
     const { error: goalError } = await supabase
       .from('goals')
       .update({ status: goal.status })
-      .eq('check_in_id', checkInId)
-      .eq('text', goal.text); // Assuming text is unique enough for this context
+      .eq('id', goal.id); // Use goal.id for update
 
     if (goalError) {
       console.error('Error updating goal status:', goalError);

@@ -19,38 +19,35 @@ interface PostCreatorProps {
 
 const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pushedGoals, disabled, checkInHistory, onAiAction }) => {
   const [focus, setFocus] = useState('');
-  const [goals, setGoals] = useState<{ id: number; text: string; attachment?: File }[]>([]);
-  const [nextGoalId, setNextGoalId] = useState(1);
+  // Updated goals state to use string IDs
+  const [goals, setGoals] = useState<{ id: string; text: string; attachment?: File }[]>([]);
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  // Fix 1: Rename 's' to '_s' in the initial empty function to satisfy TS6133
   const [modalContent, setModalContent] = useState<{ title: string; description: string; suggestions: string[]; onSelect: (s: string) => void }>({ title: '', description: '', suggestions: [], onSelect: (_s: string) => {} });
 
   // Initialize or reset goals
   const initializeGoals = (initialGoals: string[] = []) => {
-    let newGoals = initialGoals.map((text, index) => ({ id: index, text, attachment: undefined }));
+    let newGoals = initialGoals.map((text) => ({ id: crypto.randomUUID(), text, attachment: undefined }));
     while (newGoals.length < 3) {
-      newGoals.push({ id: newGoals.length, text: '', attachment: undefined });
+      newGoals.push({ id: crypto.randomUUID(), text: '', attachment: undefined });
     }
     setGoals(newGoals);
-    setNextGoalId(newGoals.length);
   };
 
   useEffect(() => {
     initializeGoals(pushedGoals);
   }, [pushedGoals]);
   
-  const handleUpdateGoal = (id: number, text: string) => {
+  const handleUpdateGoal = (id: string, text: string) => {
     setGoals(goals.map(g => g.id === id ? { ...g, text } : g));
   };
 
   const handleAddGoalField = () => {
-    setGoals(prevGoals => [...prevGoals, { id: nextGoalId, text: '', attachment: undefined }]);
-    setNextGoalId(prevId => prevId + 1);
+    setGoals(prevGoals => [...prevGoals, { id: crypto.randomUUID(), text: '', attachment: undefined }]);
   };
 
-  const handleFileChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -61,7 +58,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
     }
   };
   
-  const handleRemoveAttachment = (id: number) => {
+  const handleRemoveAttachment = (id: string) => {
     setGoals(goals.map(g => g.id === id ? { ...g, attachment: undefined } : g));
   };
   
@@ -79,14 +76,13 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
     initializeGoals(); // Reset goals to empty state
   };
 
-  const openSuggestionModal = async (type: 'focus' | 'goal', goalIdToUpdate?: number) => {
+  const openSuggestionModal = async (type: 'focus' | 'goal', goalIdToUpdate?: string) => {
       onAiAction();
       setIsGenerating(true);
       setModalOpen(true);
       
       let title = '', description = '';
       let suggestions: string[] = [];
-      // Fix 2: Rename 's' to '_s' in the initial empty function to satisfy TS6133
       let onSelect: (s: string) => void = (_s: string) => {};
       
       try {
