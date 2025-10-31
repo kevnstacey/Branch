@@ -1,4 +1,4 @@
-@import '@supabase/auth-ui-react/dist/css/main.css';
+@import '@supabase/auth-ui-react/dist/style.css';
 
 @tailwind base;
 @tailwind components;
