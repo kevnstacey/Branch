@@ -144,7 +144,7 @@ export const fetchPodData = async (podId: string, currentUserId: string): Promis
 };
 
 // Creates a new user profile in the 'users' table if it doesn't exist
-export const ensureUserProfile = async (supabaseUser: any): Promise<User> => {
+export const ensureUserProfile = async (supabaseUser: any): Promise<User | null> => {
   const { data: existingProfile, error: fetchError } = await supabase
     .from('users')
     .select('id, name, email, photo_url')
@@ -153,6 +153,7 @@ export const ensureUserProfile = async (supabaseUser: any): Promise<User> => {
 
   if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows found
     console.error('Error fetching existing user profile:', fetchError);
+    return null; // Return null on error
   }
 
   if (existingProfile) {
@@ -163,28 +164,10 @@ export const ensureUserProfile = async (supabaseUser: any): Promise<User> => {
       avatar: existingProfile.photo_url || '👤',
     };
   } else {
-    // Create new profile
-    const { data: newProfile, error: insertError } = await supabase
-      .from('users')
-      .insert({
-        id: supabaseUser.id,
-        name: supabaseUser.user_metadata.name || supabaseUser.email?.split('@')[0],
-        email: supabaseUser.email,
-        photo_url: supabaseUser.user_metadata.photo_url || supabaseUser.user_metadata.avatar_url,
-      })
-      .select('id, name, email, photo_url')
-      .single();
-
-    if (insertError) {
-      console.error('Error creating new user profile:', insertError);
-      throw insertError;
-    }
-    return {
-      id: newProfile.id,
-      name: newProfile.name || newProfile.email?.split('@')[0] || 'User',
-      email: newProfile.email || '',
-      avatar: newProfile.photo_url || '👤',
-    };
+    // If no existing profile is found, it means the handle_new_user trigger might not have fired yet
+    // or there's a configuration issue. We should not attempt to insert here to avoid conflicts with the trigger.
+    console.warn(`User profile for ${supabaseUser.id} not found in public.users. This might indicate a delay in the 'handle_new_user' trigger or a configuration issue.`);
+    return null;
   }
 };
 
@@ -230,7 +213,7 @@ export const addCheckIn = async (
 ): Promise<CheckIn | null> => {
   const { data: newCheckIn, error: checkInError } = await supabase
     .from('check_ins')
-    .insert({ user_id: userId, pod_id: podId, type: 'morning', focus })
+    .insert({ user_id: userId, pod_id: podId, focus })
     .select('id, user_id, timestamp, type, focus, evening_recap')
     .single();
 

@@ -78,23 +78,39 @@ export const usePodData = ({ session }: UsePodDataProps): UsePodDataReturn => {
   useEffect(() => {
     const loadUserData = async () => {
       if (session?.user) {
+        console.log('Session user found:', session.user);
         const appUser = await ensureUserProfile(session.user);
+        if (!appUser) {
+          console.error('Failed to load user profile. This might indicate a delay in the Supabase `handle_new_user` trigger or a configuration issue.');
+          setCurrentUser(null); // Explicitly set to null to keep spinner
+          setActivePod(null); // Explicitly set to null to keep spinner
+          return; // Stop further loading
+        }
+        console.log('App user after ensureUserProfile:', appUser);
         setCurrentUser(appUser);
 
         const pods = await fetchUserPods(appUser.id);
+        console.log('Pods fetched:', pods);
 
         if (pods.length > 0) {
           // For now, just pick the first pod. In a real app, user would select.
           const fullPodData = await fetchPodData(pods[0].id, appUser.id);
+          console.log('Full pod data fetched (existing pod):', fullPodData);
           setActivePod(fullPodData);
         } else {
-          // If no pods, create a default one for the user
+          console.log('No pods found for user, creating a new one...');
           const newPod = await createNewPod(`${appUser.name}'s Pod`, appUser.id);
+          console.log('New pod created:', newPod);
           if (newPod) {
             const fullPodData = await fetchPodData(newPod.id, appUser.id);
+            console.log('Full pod data fetched (new pod):', fullPodData);
             setActivePod(fullPodData);
+          } else {
+            console.error('Failed to create new pod.');
           }
         }
+      } else {
+        console.log('No session user found.');
       }
     };
     loadUserData();
