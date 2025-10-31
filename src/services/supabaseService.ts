@@ -145,30 +145,36 @@ export const fetchPodData = async (podId: string, currentUserId: string): Promis
 
 // Creates a new user profile in the 'users' table if it doesn't exist
 export const ensureUserProfile = async (supabaseUser: any): Promise<User | null> => {
-  const { data: existingProfile, error: fetchError } = await supabase
-    .from('users')
-    .select('id, name, email, photo_url')
-    .eq('id', supabaseUser.id)
-    .single();
+  const MAX_RETRIES = 5;
+  const RETRY_DELAY_MS = 1000; // 1 second
 
-  if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows found
-    console.error('Error fetching existing user profile:', fetchError);
-    return null; // Return null on error
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from('users')
+      .select('id, name, email, photo_url')
+      .eq('id', supabaseUser.id)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows found
+      console.error(`Error fetching existing user profile (attempt ${i + 1}):`, fetchError);
+      if (i === MAX_RETRIES - 1) return null; // If last retry failed, return null
+    }
+
+    if (existingProfile) {
+      return {
+        id: existingProfile.id,
+        name: existingProfile.name || supabaseUser.email?.split('@')[0] || 'User', // Use supabaseUser.email as fallback
+        email: existingProfile.email || supabaseUser.email || '',
+        avatar: existingProfile.photo_url || '👤',
+      };
+    } else {
+      console.warn(`User profile for ${supabaseUser.id} not found in public.users (attempt ${i + 1}). Retrying...`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+    }
   }
 
-  if (existingProfile) {
-    return {
-      id: existingProfile.id,
-      name: existingProfile.name || existingProfile.email?.split('@')[0] || 'User',
-      email: existingProfile.email || '',
-      avatar: existingProfile.photo_url || '👤',
-    };
-  } else {
-    // If no existing profile is found, it means the handle_new_user trigger might not have fired yet
-    // or there's a configuration issue. We should not attempt to insert here to avoid conflicts with the trigger.
-    console.warn(`User profile for ${supabaseUser.id} not found in public.users. This might indicate a delay in the 'handle_new_user' trigger or a configuration issue.`);
-    return null;
-  }
+  console.error(`Failed to load user profile for ${supabaseUser.id} after ${MAX_RETRIES} retries. The 'handle_new_user' trigger might not be functioning correctly or there's a persistent configuration issue.`);
+  return null;
 };
 
 // Creates a new pod and adds the current user as a member
