@@ -12,7 +12,6 @@ export interface Attachment {
 }
 
 export interface FeedGoal {
-  id?: string; // Added optional ID for database-backed goals
   text: string;
   status: GoalStatus;
   attachment?: Attachment;

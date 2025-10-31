@@ -19,35 +19,37 @@ interface PostCreatorProps {
 
 const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pushedGoals, disabled, checkInHistory, onAiAction }) => {
   const [focus, setFocus] = useState('');
-  // Updated goals state to use string IDs
-  const [goals, setGoals] = useState<{ id: string; text: string; attachment?: File }[]>([]);
+  const [goals, setGoals] = useState<{ id: number; text: string; attachment?: File }[]>([]);
+  const [nextGoalId, setNextGoalId] = useState(1);
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<{ title: string; description: string; suggestions: string[]; onSelect: (s: string) => void }>({ title: '', description: '', suggestions: [], onSelect: (_s: string) => {} });
+  const [modalContent, setModalContent] = useState({ title: '', description: '', suggestions: [] as string[], onSelect: (s: string) => {} });
 
   // Initialize or reset goals
   const initializeGoals = (initialGoals: string[] = []) => {
-    let newGoals = initialGoals.map((text) => ({ id: crypto.randomUUID(), text, attachment: undefined }));
+    let newGoals = initialGoals.map((text, index) => ({ id: index, text, attachment: undefined }));
     while (newGoals.length < 3) {
-      newGoals.push({ id: crypto.randomUUID(), text: '', attachment: undefined });
+      newGoals.push({ id: newGoals.length, text: '', attachment: undefined });
     }
     setGoals(newGoals);
+    setNextGoalId(newGoals.length);
   };
 
   useEffect(() => {
     initializeGoals(pushedGoals);
   }, [pushedGoals]);
   
-  const handleUpdateGoal = (id: string, text: string) => {
+  const handleUpdateGoal = (id: number, text: string) => {
     setGoals(goals.map(g => g.id === id ? { ...g, text } : g));
   };
 
   const handleAddGoalField = () => {
-    setGoals(prevGoals => [...prevGoals, { id: crypto.randomUUID(), text: '', attachment: undefined }]);
+    setGoals(prevGoals => [...prevGoals, { id: nextGoalId, text: '', attachment: undefined }]);
+    setNextGoalId(prevId => prevId + 1);
   };
 
-  const handleFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -58,7 +60,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
     }
   };
   
-  const handleRemoveAttachment = (id: string) => {
+  const handleRemoveAttachment = (id: number) => {
     setGoals(goals.map(g => g.id === id ? { ...g, attachment: undefined } : g));
   };
   
@@ -76,21 +78,20 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
     initializeGoals(); // Reset goals to empty state
   };
 
-  const openSuggestionModal = async (type: 'focus' | 'goal', goalIdToUpdate?: string) => {
+  const openSuggestionModal = async (type: 'focus' | 'goal', goalIdToUpdate?: number) => {
       onAiAction();
       setIsGenerating(true);
       setModalOpen(true);
       
-      let title = '', description = '';
-      let suggestions: string[] = [];
-      let onSelect: (s: string) => void = (_s: string) => {};
+      let title = '', description = '', suggestions: string[] = [];
+      let onSelect = (s: string) => {};
       
       try {
         if (type === 'focus') {
             title = 'AI Focus Suggestions';
             description = 'Based on your recent activity.';
             onSelect = (s) => setFocus(s);
-            setModalContent({ title, description, suggestions: [], onSelect }); // Show loading state
+            setModalContent({ title, description, suggestions, onSelect }); // Show loading state
             suggestions = await generateFocusSuggestions(checkInHistory);
         } else {
             if (!focus) {
@@ -106,7 +107,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ currentUser, onAddCheckIn, pu
                 handleUpdateGoal(goalIdToUpdate, s);
               }
             };
-            setModalContent({ title, description, suggestions: [], onSelect }); // Show loading state
+            setModalContent({ title, description, suggestions, onSelect }); // Show loading state
             suggestions = await generateGoalSuggestions(focus);
         }
         

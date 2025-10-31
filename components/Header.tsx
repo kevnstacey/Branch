@@ -1,8 +1,10 @@
 // components/Header.tsx
 import React, { useState, useEffect, useRef } from 'react';
+// FIX: The CheckIn type is not used in this component.
 import { Pod, User, Notification } from '../types';
-import Avatar from './Avatar'; // Added Avatar import
+import Avatar from './Avatar';
 
+// FIX: Updated HeaderProps to match usage in App.tsx, removing demo-related props.
 interface HeaderProps {
   activePod: Pod;
   currentUser: User;
@@ -26,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
-  const [isMobileMenuOpen, setMobileMenuMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -34,8 +36,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  // Adjusted type signature to accept HTMLElement | null
-  const useOutsideAlerter = (ref: React.RefObject<HTMLElement | null>, close: () => void) => {
+  const useOutsideAlerter = (ref: React.RefObject<HTMLDivElement>, close: () => void) => {
     useEffect(() => {
       function handleClickOutside(event: MouseEvent) {
         if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -49,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
 
   useOutsideAlerter(userMenuRef, () => setUserMenuOpen(false));
   useOutsideAlerter(notificationRef, () => setNotificationOpen(false));
-  useOutsideAlerter(mobileMenuRef, () => setMobileMenuMenuOpen(false));
+  useOutsideAlerter(mobileMenuRef, () => setMobileMenuOpen(false));
   
   const getNotificationText = (notification: Notification) => {
     const fromUser = activePod.members.find(m => m.id === notification.fromUserId);
@@ -141,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({
               )}
             </div>
             <div className="lg:hidden" ref={mobileMenuRef}>
-                 <button onClick={() => setMobileMenuMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-full text-stone-500 hover:bg-stone-100">
+                 <button onClick={() => setMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-full text-stone-500 hover:bg-stone-100">
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                  </button>
                  {isMobileMenuOpen && (

@@ -38,7 +38,10 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, podName }) =
     }, 1500); 
   };
   
-  // Removed handleInviteAnother as it was unused.
+  const handleInviteAnother = () => {
+    setStatus('idle');
+    setInvitee('');
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>

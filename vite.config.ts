@@ -11,19 +11,12 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        // Expose environment variables to the client-side code
-        'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY),
-        'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
-        'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY)
+        // Expose VITE_GEMINI_API_KEY to the client-side code
+        'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY)
       },
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
-          // Explicitly alias React and ReactDOM to CDN paths for Vite's resolver
-          'react': 'https://aistudiocdn.com/react@19.2.0',
-          'react-dom': 'https://aistudiocdn.com/react-dom@19.2.0',
-          'react/jsx-dev-runtime': 'https://aistudiocdn.com/react@19.2.0/jsx-dev-runtime',
-          'react-dom/client': 'https://aistudiocdn.com/react-dom@19.2.0/client'
         }
       }
     };

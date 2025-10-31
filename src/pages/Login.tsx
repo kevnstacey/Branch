@@ -16,7 +16,7 @@ const Login: React.FC = () => {
         </div>
         <Auth
           supabaseClient={supabase}
-          providers={['google']} // Enabled Google as an authentication provider
+          providers={[]} // You can add 'google', 'github', etc. here if you configure them in Supabase
           appearance={{
             theme: ThemeSupa,
             variables: {
@@ -28,16 +28,13 @@ const Login: React.FC = () => {
                   defaultButtonBackground: '#f5f5f4', // stone-100
                   defaultButtonBackgroundHover: '#e7e5e4', // stone-200
                   defaultButtonBorder: '#d6d3d1', // stone-300
-                  defaultButtonText: '#292524', // stone-800
-                  inputBackground: '#ffffff', // white
+                  defaultButtonText: '#44403c', // stone-700
+                  inputBackground: 'white',
                   inputBorder: '#d6d3d1', // stone-300
                   inputBorderHover: '#a8a29e', // stone-400
                   inputBorderFocus: '#059669', // emerald-600
-                  inputText: '#292524', // stone-800
-                  inputLabelText: '#57534e', // stone-600
-                  dividerBackground: '#d6d3d1', // stone-300
-                  anchorTextColor: '#059669', // emerald-600
-                  anchorTextHoverColor: '#047857', // emerald-700
+                  inputText: '#292524', // stone-900
+                  inputLabelText: '#57534e', // stone-700
                 },
               },
             },
