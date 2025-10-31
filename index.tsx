@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './src/index.css'; // Import the new Tailwind CSS file
 import { SessionContextProvider } from './src/components/SessionContextProvider'; // Import SessionContextProvider
-import '@supabase/auth-ui-react/dist/assets/index.css'; // Reverted to original import path for Supabase Auth UI CSS
+// Removed: import '@supabase/auth-ui-react/dist/assets/index.css'; // This import is not needed as styling is handled by ThemeSupa
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
