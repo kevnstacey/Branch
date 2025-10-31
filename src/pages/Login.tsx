@@ -16,7 +16,7 @@ const Login: React.FC = () => {
         </div>
         <Auth
           supabaseClient={supabase}
-          providers={[]} // You can add 'google', 'github', etc. here if you configure them in Supabase
+          providers={['google']} // Enabled Google as an authentication provider
           appearance={{
             theme: ThemeSupa,
             variables: {
