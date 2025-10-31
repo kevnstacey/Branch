@@ -1,20 +1,21 @@
 "use client";
 // services/geminiService.ts
 import { GoogleGenAI, Type } from "@google/genai";
-import { CheckIn, User } from '../types';
+import { CheckIn, User, FeedGoal } from '../types';
 
 // Access the API key using import.meta.env for Vite
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 if (!apiKey) {
   console.error("VITE_GEMINI_API_KEY is not set. Please ensure it's in your .env.local file and the app is rebuilt.");
+} else {
+  console.log("Gemini API Key loaded (first 5 chars):", apiKey.substring(0, 5) + "...");
 }
 
 const ai = new GoogleGenAI({ apiKey: apiKey! });
 const model = 'gemini-2.5-flash';
 
-const safeJsonParse = (jsonString: string | undefined) => { // Allow undefined input
+const safeJsonParse = (jsonString: string) => {
   try {
-    if (jsonString === undefined) return null; // Handle undefined input
     // Sanitize the response to remove markdown backticks
     const cleanJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '');
     return JSON.parse(cleanJsonString);
@@ -85,7 +86,7 @@ export const generateEncouragement = async (user: User, checkIn: CheckIn): Promi
   const prompt = `My podmate ${user.name} just shared their morning intention. Their main focus is: "${checkIn.focus}". Their goals are:\n${goalList}\nWrite a short, encouraging, and supportive comment for them (1-2 sentences). Speak in a friendly, casual tone as if you are their accountability partner. Don't use hashtags.`;
 
   const response = await ai.models.generateContent({ model, contents: prompt });
-  return response.text?.trim() ?? ''; // Added nullish coalescing
+  return response.text.trim();
 };
 
 export const generateEveningSummary = async (checkIn: CheckIn): Promise<string> => {
@@ -93,5 +94,5 @@ export const generateEveningSummary = async (checkIn: CheckIn): Promise<string> 
   const prompt = `My evening recap for today: Focus: "${checkIn.focus}"\nGoals:\n${goalSummary}\nWrite a very short (1 sentence) constructive and encouraging summary of my evening reflection.`;
 
   const response = await ai.models.generateContent({ model, contents: prompt });
-  return response.text?.trim() ?? ''; // Added nullish coalescing
+  return response.text.trim();
 };

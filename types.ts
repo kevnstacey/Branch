@@ -12,7 +12,6 @@ export interface Attachment {
 }
 
 export interface FeedGoal {
-  id?: string; // Added optional ID for database-backed goals
   text: string;
   status: GoalStatus;
   attachment?: Attachment;
@@ -20,9 +19,8 @@ export interface FeedGoal {
 
 export interface User {
   id: string;
-  name: string; // Corresponds to 'name' in public.users
-  email: string; // Corresponds to 'email' in public.users
-  avatar: string; // Corresponds to 'photo_url' in public.users, or a generated emoji/initials
+  name: string;
+  avatar: string; // Emoji or Initials
 }
 
 export interface Reaction {
