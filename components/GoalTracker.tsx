@@ -1,16 +1,13 @@
 // components/GoalTracker.tsx
 import React, { useState } from 'react';
-// FIX: Changed import from non-existent 'Goal' to 'FeedGoal' to match the type definitions.
 import { FeedGoal, GoalStatus } from '../types';
 
 interface GoalTrackerProps {
-  // FIX: Use FeedGoal type.
   goals: FeedGoal[];
   onGoalsChange: (goals: FeedGoal[]) => void;
   isEditable: boolean;
   onAddGoal?: (goalText: string) => void;
-  // FIX: Handlers now use array index instead of a non-existent ID.
-  onRemoveGoal?: (goalIndex: number) => void;
+  onRemoveGoal?: (goalId: string) => void; // Changed to use goalId
 }
 
 const GoalStatusButton: React.FC<{ status: GoalStatus; onClick: () => void; isSelected: boolean }> = ({ status, onClick, isSelected }) => {
@@ -33,8 +30,8 @@ const GoalStatusButton: React.FC<{ status: GoalStatus; onClick: () => void; isSe
   );
 };
 
-// FIX: Refactored GoalItem to use array indices for state updates instead of a non-existent ID.
-const GoalItem: React.FC<{goal: FeedGoal, goalIndex: number, isEditable: boolean, onStatusChange: (index: number, status: GoalStatus) => void, onRemove?: (index: number) => void}> = ({ goal, goalIndex, isEditable, onStatusChange, onRemove }) => {
+// Refactored GoalItem to use goal.id for state updates.
+const GoalItem: React.FC<{goal: FeedGoal, isEditable: boolean, onStatusChange: (id: string, status: GoalStatus) => void, onRemove?: (id: string) => void}> = ({ goal, isEditable, onStatusChange, onRemove }) => {
     const statusIcons = {
         [GoalStatus.Done]: '✅',
         [GoalStatus.Partial]: '🌗',
@@ -50,11 +47,11 @@ const GoalItem: React.FC<{goal: FeedGoal, goalIndex: number, isEditable: boolean
                     key={status}
                     status={status}
                     isSelected={goal.status === status}
-                    onClick={() => onStatusChange(goalIndex, status)}
+                    onClick={() => onStatusChange(goal.id!, status)} // Use goal.id
                   />
                 ))}
-                {onRemove && (
-                    <button onClick={() => onRemove(goalIndex)} className="ml-2 text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                {onRemove && goal.id && ( // Ensure goal.id exists before allowing remove
+                    <button onClick={() => onRemove(goal.id!)} className="ml-2 text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 )}
@@ -71,10 +68,10 @@ const GoalItem: React.FC<{goal: FeedGoal, goalIndex: number, isEditable: boolean
 const GoalTracker: React.FC<GoalTrackerProps> = ({ goals, onGoalsChange, isEditable, onAddGoal, onRemoveGoal }) => {
   const [newGoalText, setNewGoalText] = useState('');
 
-  // FIX: Updated status change handler to operate on the goal's index.
-  const handleStatusChange = (goalIndex: number, newStatus: GoalStatus) => {
-    const updatedGoals = goals.map((goal, index) =>
-      index === goalIndex ? { ...goal, status: newStatus } : goal
+  // Updated status change handler to operate on the goal's ID.
+  const handleStatusChange = (goalId: string, newStatus: GoalStatus) => {
+    const updatedGoals = goals.map((goal) =>
+      goal.id === goalId ? { ...goal, status: newStatus } : goal
     );
     onGoalsChange(updatedGoals);
   };
@@ -87,22 +84,21 @@ const GoalTracker: React.FC<GoalTrackerProps> = ({ goals, onGoalsChange, isEdita
     }
   };
   
-  // FIX: Updated remove handler to operate on the goal's index.
-  const handleRemoveGoal = (goalIndex: number) => {
+  // Updated remove handler to operate on the goal's ID.
+  const handleRemoveGoal = (goalId: string) => {
     if (onRemoveGoal) {
-        onRemoveGoal(goalIndex);
+        onRemoveGoal(goalId);
     }
   };
 
   return (
     <div className="space-y-3">
       <ul className="space-y-2">
-        {/* FIX: Use array index as the key and pass it down for event handlers. */}
-        {goals.map((goal, index) => (
+        {/* Use goal.id as the key */}
+        {goals.map((goal) => (
           <GoalItem 
-            key={index} 
+            key={goal.id} // Use goal.id as key
             goal={goal}
-            goalIndex={index}
             isEditable={isEditable} 
             onStatusChange={handleStatusChange} 
             onRemove={onRemoveGoal ? handleRemoveGoal : undefined}

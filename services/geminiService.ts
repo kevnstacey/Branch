@@ -1,7 +1,7 @@
 "use client";
 // services/geminiService.ts
 import { GoogleGenAI, Type } from "@google/genai";
-import { CheckIn, User, FeedGoal } from '../types';
+import { CheckIn, User } from '../types';
 
 // Access the API key using import.meta.env for Vite
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -12,8 +12,9 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey: apiKey! });
 const model = 'gemini-2.5-flash';
 
-const safeJsonParse = (jsonString: string) => {
+const safeJsonParse = (jsonString: string | undefined) => { // Allow undefined input
   try {
+    if (jsonString === undefined) return null; // Handle undefined input
     // Sanitize the response to remove markdown backticks
     const cleanJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '');
     return JSON.parse(cleanJsonString);
@@ -84,7 +85,7 @@ export const generateEncouragement = async (user: User, checkIn: CheckIn): Promi
   const prompt = `My podmate ${user.name} just shared their morning intention. Their main focus is: "${checkIn.focus}". Their goals are:\n${goalList}\nWrite a short, encouraging, and supportive comment for them (1-2 sentences). Speak in a friendly, casual tone as if you are their accountability partner. Don't use hashtags.`;
 
   const response = await ai.models.generateContent({ model, contents: prompt });
-  return response.text.trim();
+  return response.text?.trim() ?? ''; // Added nullish coalescing
 };
 
 export const generateEveningSummary = async (checkIn: CheckIn): Promise<string> => {
@@ -92,5 +93,5 @@ export const generateEveningSummary = async (checkIn: CheckIn): Promise<string> 
   const prompt = `My evening recap for today: Focus: "${checkIn.focus}"\nGoals:\n${goalSummary}\nWrite a very short (1 sentence) constructive and encouraging summary of my evening reflection.`;
 
   const response = await ai.models.generateContent({ model, contents: prompt });
-  return response.text.trim();
+  return response.text?.trim() ?? ''; // Added nullish coalescing
 };

@@ -29,8 +29,8 @@ const EveningCheckInModal: React.FC<EveningCheckInModalProps> = ({ isOpen, onClo
   
   if (!isOpen || !checkIn) return null;
 
-  const handleStatusChange = (index: number, status: GoalStatus) => {
-    setGoals(prev => prev.map((g, i) => i === index ? { ...g, status } : g));
+  const handleStatusChange = (goalId: string, status: GoalStatus) => {
+    setGoals(prev => prev.map((g) => g.id === goalId ? { ...g, status } : g));
   };
 
   const handleTogglePushedGoal = (goalText: string) => {
@@ -76,8 +76,8 @@ const EveningCheckInModal: React.FC<EveningCheckInModalProps> = ({ isOpen, onClo
         </div>
         
         <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-          {goals.map((goal, index) => (
-            <div key={index} className="bg-stone-50 p-3 rounded-lg">
+          {goals.map((goal) => (
+            <div key={goal.id} className="bg-stone-50 p-3 rounded-lg"> {/* Use goal.id as key */}
               <p className="text-sm text-stone-800 mb-2">{goal.text}</p>
               {goal.attachment && (
                 <div className="mb-2 flex items-center space-x-2 text-xs text-stone-500 bg-stone-200/50 px-2 py-1 rounded-md w-fit">
@@ -88,7 +88,7 @@ const EveningCheckInModal: React.FC<EveningCheckInModalProps> = ({ isOpen, onClo
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center space-x-2">
                   {(Object.values(GoalStatus) as GoalStatus[]).map(status => (
-                    <button key={status} onClick={() => handleStatusChange(index, status)} className={`px-2.5 py-1 text-xs font-medium rounded-full transition-all ${goal.status === status ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600 hover:bg-stone-300'}`}>
+                    <button key={status} onClick={() => handleStatusChange(goal.id!, status)} className={`px-2.5 py-1 text-xs font-medium rounded-full transition-all ${goal.status === status ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600 hover:bg-stone-300'}`}>
                       {status}
                     </button>
                   ))}

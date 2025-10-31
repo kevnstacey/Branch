@@ -17,6 +17,11 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+          // Explicitly alias React and ReactDOM to CDN paths for Vite's resolver
+          'react': 'https://aistudiocdn.com/react@19.2.0',
+          'react-dom': 'https://aistudiocdn.com/react-dom@19.2.0',
+          'react/jsx-dev-runtime': 'https://aistudiocdn.com/react@19.2.0/jsx-dev-runtime',
+          'react-dom/client': 'https://aistudiocdn.com/react-dom@19.2.0/client'
         }
       }
     };
